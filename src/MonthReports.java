@@ -9,29 +9,43 @@ import java.util.List;
 public class MonthReports { //объект для хранения всех месячных отчетов
     public ArrayList<MonthData> allMonthReport = new ArrayList<>();
 
-    public void addMonth (String path) { // загрузка одного месяца
+    public Boolean addMonth (String path) { // загрузка одного месяца
         List<String> lines = readFileContents(path); //считываем в коллекцию файл, в коллекции каждый элемент это строка из загруженного файла
+
+        if (!lines.isEmpty()) { // проверка что удалось получить данные из скачиваемого файла
+            System.out.println("Скачан файл " + Path.of(path));
+        } else {
+            System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно файл не находится в нужной директории.");
+            System.out.println("Ожидаемый путь " + Path.of(path));
+            return false;
+        }
 
         MonthData monthData = new MonthData();
 
         for (int i = 1; i < lines.size(); i++) {
             String[] item = lines.get(i).split(","); //получил массив из строк, которые представляют собой отдельные значения в загруженном файле
 
-            //преобразуем полученный массив из строк в отдельные переменные для создания записи месячнеого отчета
-            String itemName = item[0];
-            Integer quantity = Integer.parseInt(item[2]);
-            Integer sumOfOne = Integer.parseInt(item[3]);
-            Boolean isExpense = Boolean.parseBoolean(item[1]);
-            MonthItem monthItem = new MonthItem(itemName, quantity, sumOfOne, isExpense); //создаем запись месячного отчета
+            //создаем запись месячного отчета
+            MonthItem monthItem = new MonthItem(item[0],
+                                                Integer.parseInt(item[2]),
+                                                Integer.parseInt(item[3]),
+                                                Boolean.parseBoolean(item[1]));
+
             monthData.rows.add(monthItem); //добавляем запись (строку) в месячный отчет
         }
         allMonthReport.add(monthData);
+        return true;
     }
 
     public void addAllMonth(String basePath) { //добавление всех отчетов
         for (int i = 1; i<=3; i++) {
             String path = basePath + "m.20210" + i + ".csv";
-            addMonth(path);
+
+            //проверка что загрузка удалась, если нет, то прерывааем цикл загрузки
+            Boolean result = addMonth(path);
+            if (result == false) {
+                break;
+            }
         }
     }
 
@@ -39,7 +53,6 @@ public class MonthReports { //объект для хранения всех ме
         try {
             return Files.readAllLines(Path.of(path)); //получаем коллекцию строк, строки разделены в исходнике переводом каретки
         } catch (IOException e) {
-            System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно файл не находится в нужной директории.");
             return Collections.emptyList();
         }
     }

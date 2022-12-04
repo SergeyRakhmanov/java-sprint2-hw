@@ -5,8 +5,6 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        //ReportManager monthReports = new ReportManager(); //объект годового отчета
-        //ReportManager yearReport = new ReportManager(); //объект всех месячных отчетов
         Reconcellation reconcelate = new Reconcellation();
         MonthReports monthReports = new MonthReports(); //новый объект всех месячных отчетов
         YearReport yearReport = new YearReport(); //новый объект всех месячных отчетов
